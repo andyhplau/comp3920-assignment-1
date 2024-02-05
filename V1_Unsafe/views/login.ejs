@@ -1,0 +1,20 @@
+<%- include("templates/header") %> 
+<h1>Log in</h1>
+<form action='/loggingIn' method='post'>
+    <input name='username' type='text' placeholder='username'>
+    <input name='password' type='password' placeholder='password'>
+    <button>Submit</button>
+</form>
+<% if (missingUsername) { %>
+    <p>Missing username</p>
+<% } %>  
+<% if (missingPassword) { %>
+    <p>Missing password</p>
+<% } %>
+<% if (incorrectUsername) { %>
+    <p>Incorrect username</p>
+<% } %>  
+<% if (incorrectPassword) { %>
+    <p>Incorrect password</p>
+<% } %>  
+<%- include("templates/footer") %>
