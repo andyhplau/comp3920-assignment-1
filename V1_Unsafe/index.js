@@ -6,6 +6,7 @@ const MongoStore = require("connect-mongo");
 const bcrypt = require("bcrypt");
 saltRounds = 12;
 
+const database = include("databaseConnection");
 const { printMySQLVersion } = include("database/db_utils");
 const { createUser, getUser } = include("database/users");
 printMySQLVersion();
@@ -147,7 +148,6 @@ app.get("/login", (req, res) => {
 app.post("/loggingIn", async (req, res) => {
   var username = req.body.username;
   var password = req.body.password;
-
   if (!username && !password) {
     res.redirect("/login?missingUsername=1&missingPassword=1");
   } else if (!username) {
@@ -155,13 +155,23 @@ app.post("/loggingIn", async (req, res) => {
   } else if (!password) {
     res.redirect("/login?missingPassword=1");
   } else {
-    var results = await getUser({
-      user: username,
-      hashedPassword: password,
-    });
+    let query = "SELECT * FROM user WHERE username = '" + username + "'";
+    console.log(query);
+    var results;
+    try {
+      queryResults = await database.query(query);
+      results = queryResults[0];
+
+      console.log("Successfully found user");
+      console.log(results);
+    } catch (err) {
+      console.log("Error trying to find user");
+      console.log(err);
+    }
     if (results) {
       if (results.length == 1) {
         if (bcrypt.compareSync(password, results[0].password)) {
+          console.log("logged in");
           req.session.authenticated = true;
           req.session.username = username;
           req.session.cookie.maxAge = expireTime;
