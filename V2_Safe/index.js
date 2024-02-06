@@ -150,10 +150,13 @@ app.post("/loggingIn", async (req, res) => {
 
   if (!username && !password) {
     res.redirect("/login?missingUsername=1&missingPassword=1");
+    return;
   } else if (!username) {
     res.redirect("/login?missingUsername=1");
+    return;
   } else if (!password) {
     res.redirect("/login?missingPassword=1");
+    return;
   } else {
     var results = await getUser({
       user: username,
