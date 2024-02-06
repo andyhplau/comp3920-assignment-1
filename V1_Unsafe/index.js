@@ -99,10 +99,13 @@ app.post("/signingUp", async (req, res) => {
   var password = req.body.password;
   if (!username && !password) {
     res.redirect("/signup?missingUsername=1&missingPassword=1");
+    return;
   } else if (!username) {
     res.redirect("/signup?missingUsername=1");
+    return;
   } else if (!password) {
     res.redirect("/signup?missingPassword=1");
+    return;
   } else {
     var hashedPassword = bcrypt.hashSync(password, saltRounds);
     var success = await createUser({
@@ -120,8 +123,10 @@ app.post("/signingUp", async (req, res) => {
           req.session.username.slice(1),
         picURL: picURL[getRandomPicIndex()],
       });
+      return;
     } else {
       res.render("errorMessage", { error: "Failed to create user." });
+      return;
     }
   }
 });
@@ -161,12 +166,15 @@ app.post("/loggingIn", async (req, res) => {
           req.session.username = username;
           req.session.cookie.maxAge = expireTime;
           res.redirect("/members");
+          return;
         } else {
           res.redirect("/login?incorrectPassword=1");
+          return;
         }
       }
     } else {
       res.redirect("/login?incorrectUsername=1");
+      return;
     }
   }
 });
@@ -188,6 +196,7 @@ app.get("/members", (req, res) => {
 app.get("/logout", (req, res) => {
   req.session.destroy();
   res.redirect("/");
+  return;
 });
 
 app.get("*", (req, res) => {
